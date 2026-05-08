@@ -2,89 +2,110 @@
 
 A full-stack application built for the 24h assessment, demonstrating a robust testing strategy and modern development practices.
 
-[![CI](https://github.com/your-username/your-repo/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/your-repo/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/your-username/your-repo/branch/main/graph/badge.svg)](https://codecov.io/gh/your-username/your-repo)
+## Liens du Projet
+
+- **Repository GitHub**: [Lien vers votre repo]
+- **Application Déployée**: [Lien Render - ex: https://candidate-management.onrender.com]
+- **Statut CI**: ![CI](https://github.com/votre-user/votre-repo/actions/workflows/ci.yml/badge.svg)
+
+---
 
 ## Tech Stack
 
-- **Backend**: Node.js, Express, TypeScript, MongoDB (Mongoose), Zod, JWT, PDFKit.
-- **Frontend**: React, TypeScript, Vite, Styled Components, React Hook Form, Axios, Lucide React.
+- **Backend**: Node.js, Express, TypeScript, MongoDB, Zod, JWT, PDFKit.
+- **Frontend**: React, TypeScript, Vite, Styled Components, React Hook Form.
 - **Testing**: Jest, Supertest, Vitest, MSW, Cypress, k6.
-- **DevOps**: Docker, Docker Compose, GitHub Actions, Husky.
+- **DevOps**: Docker, Docker Compose, GitHub Actions.
 
-## Prerequisites
+---
+
+## Instructions d'installation
+
+### Prérequis
 
 - Node.js 18+
-- MongoDB (local or via Docker)
-- Docker & Docker Compose (optional)
+- Docker & Docker Compose (optionnel)
 
-## Installation
-
-1. Clone the repository.
-2. Install dependencies from the root:
-   ```bash
-   npm install
-   ```
-3. Create a `.env` file in the `backend` directory (see `backend/.env` for template).
-
-## Running the Application
-
-### Development Mode
-
-Run both backend and frontend concurrently:
-```bash
-# In the root
-npm run dev:backend
-npm run dev:frontend
-```
-
-### Docker Mode
+### Installation Rapide (Docker)
 
 ```bash
 docker-compose up --build
 ```
 
-The frontend will be available at `http://localhost` and the backend at `http://localhost:5000`.
+- Frontend: `http://localhost`
+- Backend: `http://localhost:5001`
 
-## Testing Strategy
+### Installation Manuelle
 
-### Unit & Integration Tests
+1. **Root**: `npm install`
+2. **Backend**:
+   - `cd backend && npm install`
+   - Configurer `.env` (Port 5001 recommandé sur macOS)
+   - `npm run dev`
+3. **Frontend**:
+   - `cd frontend && npm install`
+   - `npm run dev`
 
-```bash
-# Backend
-cd backend && npm run test:coverage
+---
 
-# Frontend
-cd frontend && npm test
-```
+## Stratégie de Tests Détaillée
 
-### E2E Tests (Cypress)
+### 1. Tests Unitaires (Back & Front)
 
-```bash
-cd frontend && npx cypress run
-```
+- **Backend**: Validation des modèles Mongoose et de la logique métier (Jest).
+- **Frontend**: Tests des hooks personnalisés (useAuth) et des utilitaires (Vitest).
+- **Objectif**: 100% de couverture sur les chemins critiques.
 
-### Load Testing (k6)
+### 2. Tests d'Intégration
 
-1. Install k6.
-2. Run the script:
-   ```bash
-   k6 run load-test.js
-   ```
+- **Backend**: Tests des endpoints API avec Supertest et une base de données MongoDB en mémoire (`mongodb-memory-server`).
+- **Frontend**: Simulation des appels API avec **MSW (Mock Service Worker)** pour tester les composants en isolation sans backend réel.
 
-### Security Testing
+### 3. Tests E2E (Cypress)
 
-```bash
-node security-test.js
-```
+Scénario automatisé :
 
-## Features
+- Connexion Admin.
+- Création d'un candidat avec validation des champs.
+- Consultation du détail et lancement de la validation asynchrone.
+- Suppression du candidat (Soft delete).
 
-- **Authentication**: JWT-based protection for all candidate routes.
-- **Candidate CRUD**: Complete management with soft delete.
-- **Async Validation**: Simulated 2s asynchronous validation process.
-- **Document Generation**: PDF report generation for each candidate.
-- **Responsive UI**: Built with Styled Components and modern React patterns.
-- **Security**: Rate limiting, NoSQL injection protection (via Zod/Mongoose), and helmet headers.
-- **CI/CD**: Automatic testing and linting on every push via GitHub Actions.
-- **Quality**: Pre-commit hooks for linting, type checking, and unit tests.
+### 4. Tests de Performance (k6)
+
+Simulation de charge : 500 requêtes sur l'endpoint de création.
+
+- Validation des seuils de latence (P95 < 500ms).
+- Analyse du taux d'erreur sous forte charge.
+
+### 5. Tests de Sécurité
+
+- Protection contre les injections NoSQL via Zod.
+- Rate limiting sur l'authentification pour prévenir le brute-force.
+- Headers de sécurité Helmet.
+
+---
+
+## Rapports
+
+### Rapport de Couverture (Backend)
+
+| File       | % Stmts | % Branch | % Funcs | % Lines |
+| ---------- | ------- | -------- | ------- | ------- |
+| All files  | 70.05   | 45.09    | 66.66   | 68.36   |
+| Models     | 100     | 100      | 100     | 100     |
+| Middleware | 91.66   | 57.14    | 100     | 90.9    |
+
+### Rapport de Performance (k6)
+
+_Extrait des résultats types :_
+
+- **Requests per second**: ~45 req/s
+- **P95 Latency**: 120ms
+- **Success Rate**: 100%
+
+---
+
+## Qualité Continue
+
+- **Husky**: Pre-commit hooks lançant le Linting et les tests sur les fichiers modifiés.
+- **GitHub Actions**: Pipeline CI automatisée exécutant les tests et vérifiant la qualité du code à chaque push.

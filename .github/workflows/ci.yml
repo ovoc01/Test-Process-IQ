@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+
+    - name: Install root dependencies
+      run: npm install
+
+    - name: Install backend dependencies
+      run: cd backend && npm install
+
+    - name: Install frontend dependencies
+      run: cd frontend && npm install
+
+    - name: Lint and Type Check
+      run: npm run lint
+
+    - name: Run Backend Tests
+      run: cd backend && npm run test:coverage
+      env:
+        MONGODB_URI: mongodb://localhost:27017/test_db
+        JWT_SECRET: supersecretkey
+
+    - name: Run Frontend Tests
+      run: cd frontend && npm test -- --run
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        directory: ./backend/coverage
+        flags: backend

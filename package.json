@@ -2,6 +2,9 @@
   "name": "candidate-management-system",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "workspaces": [
     "backend",
     "frontend"
@@ -12,7 +15,7 @@
     "test": "npm run test --workspaces",
     "lint": "npm run lint --workspaces",
     "format": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "node -e \"if (process.env.NODE_ENV !== 'production') { try { require('husky').install() } catch (e) {} }\""
   },
   "devDependencies": {
     "husky": "^8.0.3",
